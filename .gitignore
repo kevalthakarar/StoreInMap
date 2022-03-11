@@ -1,0 +1,5 @@
+# ignoring node_modules files
+node_modules/
+
+# ignore config.env file for private data
+config/config.env
