@@ -14,8 +14,11 @@ const app = express();
 // body Parser
 app.use(express.json());
 
+
 // for corse
 app.use(cors());
+
+app.use(express.static(path.join(__dirname , 'public')));
 
 // user router
 app.use('/api/v1/stores' , require('./routes/stores'));
