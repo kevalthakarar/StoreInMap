@@ -22,7 +22,10 @@ const storeSchema = new mongoose.Schema({
                 type: [Number],
                 index : '2dsphere'
             },
-            formattedAddress : String,
+            formattedAddress : {
+                type : String,
+                default : ""
+            }
     },
 
     createdAt : {
@@ -34,11 +37,21 @@ const storeSchema = new mongoose.Schema({
 //geoCoder
 
 storeSchema.pre('save' , async function(next){
+
     const loc = await geocoder.geocode(this.address);
-    this.location = {
-        type : ['Point'],
-        coordinates : [loc[0].longitude , loc[0].latitude],
-        formattedAddress : loc[0].formattedAddress
+
+    if(this.location.coordinates != undefined){
+        this.location.type = ['Point']
+        this.location.formattedAddress = loc[0].formattedAddress
+        this.address = undefined;
+        next();
+    }
+    else {
+        this.location = {
+            type : ['Point'],
+            coordinates : [loc[0].longitude , loc[0].latitude],
+            formattedAddress : loc[0].formattedAddress
+        }
     }
 
     this.address = undefined;

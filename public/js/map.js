@@ -1,15 +1,30 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2YWx0aGFrYXJhcjEwMTAiLCJhIjoiY2wwbmZzcXo0MDdoZjNpcGt1b21peHZ3OSJ9.c7mEEqQk0ZFtwV0_xiKa2A';
 
-
-const map = new mapboxgl.Map({
+var map = new mapboxgl.Map({
     container: 'map', // container ID
     style: 'mapbox://styles/mapbox/streets-v11', // style URL
     center: [70.064, 22.469], // starting position [lng, lat]
-    zoom: 12 // starting zoom
+    zoom: 12, // starting zoom
+    //attributionControl: true
+
 });
+map.addControl(new mapboxgl.GeolocateControl({
+  positionOptions: {
+      enableHighAccuracy: true
+  },
+  trackUserLocation: true,
+  showUserHeading: true
+}));
+
+const marker = new mapboxgl.Marker({
+  color: "blue",
+  draggable: true
+  }).setLngLat([71.064, 22.469])
+  .addTo(map);
+
+
 
 //Fetch coordinate from dbs
-
 
 async function getStores(){
     const res = await fetch('/api/v1/stores');
@@ -28,7 +43,6 @@ async function getStores(){
                 }
         }
     });
-    console.log(stores);
     loadMap(stores);
 }
 
@@ -58,3 +72,12 @@ function loadMap(stores){
 }
 
 getStores();
+
+
+
+const mark = document.getElementById('mark');
+mark.addEventListener('click' , () =>{
+  const lngLat = marker.getLngLat();
+  localStorage.setItem('lng' , lngLat.lng)
+  localStorage.setItem('lat' , lngLat.lat)
+})

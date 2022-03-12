@@ -1,5 +1,5 @@
 const Store = require('../models/Store');
-
+const geocoder = require('../utils/geocoder');
 
 /**
  * 
@@ -58,4 +58,39 @@ exports.addStores = async (req , res , next) => {
         })
     }
 
+}
+
+exports.postStores = async (req , res , next) => {
+
+    const loc = {
+        lat : req.body.lang,
+        lon : req.body.lati
+    }
+    const ad = await geocoder.reverse(loc);
+    
+    req.body.address = ad[0].formattedAddress;
+    req.body.location = {
+        coordinates : [loc.lat , loc.lon]
+    }
+
+    reqBody = {
+        storeId : req.body.storeId,
+        address : req.body.address,
+        location : req.body.location
+    }
+
+    try {
+        const store = await Store.create(reqBody);
+
+        res.status(200).json({
+            success : true,
+            data : store
+        })
+
+    }catch(err){
+        res.status(500).json({
+            success : false,
+            error : err.message
+        })
+    }
 }
